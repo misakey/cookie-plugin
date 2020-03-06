@@ -1,0 +1,45 @@
+##.qc-cmp-ui-showing:style(overflow: auto !important)
+airfrance.fr##.nav--home:style(overflow: auto !important; position: relative !important; )
+###box_alert_tracking
+###cookieconsent_custom
+750g.com##.app_gdpr--2k2uB
+conseil-national.medecin.fr##.region.region-page-bottom > #dpo.modal.rgpd.show
+conseil-national.medecin.fr##html:style(overflow: auto !important)
+conseil-national.medecin.fr##.modal-backdrop.show
+techworld.com##div[class^="sp_veil"]
+techworld.com##div[id^="sp_message_panel_id"]
+techworld.com##html:style(overflow: auto !important; position: static !important;)
+startpage.com##iframe[src*="ads"]
+###advgdprpopin-global
+###onetrust-consent-sdk
+wordreference.com##.app_gdpr--3hGmb
+welcometothejungle.com##.sc-1u7oiza-0.jeIHLE
+###didomi-host
+##.didomi-popup-open:style(overflow: auto !important;)
+##.didomi-consent-popup-open:style(overflow: auto !important;)
+linkedin.com##div[data-id=cookie-policy]
+###js-banner-cookies
+lafourchette.com###cboxOverlay
+lafourchette.com###colorbox
+###cookies:not(html)
+##.cookies:not(html)
+vim.fandom.com##div[data-tracking-opt-in-overlay="true"]
+vim.fandom.com##body:style(overflow-y: auto !important;)
+blog.sentry.io##.e4co1ch0
+##body.ccm-blocked:style(overflow: auto !important;)
+##.ccm-widget
+##.truste_overlay
+##.truste_box_overlay
+##.truste_box_overlay_inner
+##.CommonCookies
+##.cookiebanner:not(body)
+##.cookie-notice:not(body)
+###block-bandeaucookies
+infogreffe.fr##body > div.trackingCookiesDisclaimer:first-child
+talent.io##.footer-widget:last-child
+##*[class^="gdpr_banner_"]
+hellobank.fr##.popin-cache
+###cooky-alert-big
+afcdp.net##body.cooky-needs-consent:style(overflow: auto !important;)
+#@#.social-link
+#@#.social-link-rss

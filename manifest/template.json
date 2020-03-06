@@ -1,0 +1,59 @@
+{
+  "common": {
+    "manifest_version": 2,
+    "name": "__MSG_extensionName__",
+    "short_name": "Misakey",
+    "version": "2.0.0",
+    "author": "Misakey",
+    "description": "__MSG_extensionDescription__", 
+    "default_locale": "fr",   
+    "icons": {
+      "48": "ico/icon-48x48.png"
+    },
+    "permissions": [
+      "webRequest",
+      "webRequestBlocking",
+      "tabs",
+      "storage",
+      "http://*/*",
+      "https://*/*"
+    ],
+
+    "background": {
+      "scripts": [
+        "js/browser-polyfill.min.js",
+        "js/addon-background.js"
+      ]
+    },
+
+    "content_scripts": [
+      {
+        "match_about_blank": true,
+        "all_frames": true,
+        "js": [
+          "js/browser-polyfill.min.js",
+          "js/addon-content.js"
+        ],
+        "matches": [
+          "http://*/*",
+          "https://*/*"
+        ],
+        "run_at": "document_start"
+      }
+    ],
+
+    "browser_action": {
+      "default_icon": "ico/icon-32x32.png",
+      "default_title": "Misakey",
+      "default_popup": "addon-popup.html"
+    }
+  },
+  "firefox_specific": {
+    "browser_specific_settings": {
+      "gecko": {
+        "id": "addon@misakey.com",
+        "strict_min_version": "57.0"
+      }
+    }
+  }
+}

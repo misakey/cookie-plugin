@@ -1,0 +1,67 @@
+cache:
+  key: cookie-plugin-${CI_COMMIT_REF_NAME}
+  paths:
+    - node_modules/
+
+variables:
+  CI: "true"
+
+stages:
+  - dep
+  - test
+  - build-zip
+
+install_mod:
+  stage: dep
+  image: node:10.15.3
+  tags:
+    - misakey_js
+  script:
+    - make dep
+
+lint_code:
+  stage: test
+  image: node:10.15.3
+  tags:
+    - misakey_js
+  before_script:
+    - make dep
+  script:
+    - make strict-lint
+  only:
+    refs:
+      - tags
+      - branches
+      - schedules
+      - web
+  except:
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /^wip:/
+
+build:
+  stage: build-zip
+  image: docker:stable
+  tags:
+    - misakey_docker
+  before_script:
+    - apk add make
+    - apk add zip
+  script:
+    - make build-zip
+  only:
+    refs:
+      - master
+      - tags
+      - schedules
+      - web
+      - branches
+  except:
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /^wip:/
+  artifacts:
+    expose_as: 'build'
+    name: "cookie-plugin:zips-$CI_PIPELINE_ID"
+    paths:
+      - build/
+    expire_in: 1 day
+    

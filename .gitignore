@@ -1,6 +1,8 @@
 
 # production
 build
+public/manifest.json
+engine/database
 
 # dependencies
 node_modules

@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es5",
+    "lib": ["es6", "dom"],
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "jsx": "react",
+    "sourceMap": true,
+    "noEmit": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "baseUrl": ".",
+    "paths": {
+      "popup": ["src/addon/popup"],
+      "helpers": ["src/addon/helpers"],
+      "background": ["src/addon/background"],
+      "content": ["src/addon/content"],
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "build",
+    "public"
+   ]
+}

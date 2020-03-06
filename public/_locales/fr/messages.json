@@ -1,0 +1,62 @@
+{
+  "extensionName": {
+    "message": "Contrôler mes cookies avec Misakey"
+  },
+  "extensionDescription": {
+    "message": "Supprimez les bandeaux “j’accepte” et naviguez avec le même profil cookies sur tous les sites."
+  },
+
+  "summary_thirdParty_title": {
+    "message": "Services tiers",
+    "description": "Titre de la section présentant les scripts de tracking détectés"
+  },
+  "summary_thirdParty_count_empty": {
+    "message": "Aucun service tiers détecté",
+    "description": "item indiquant qu'aucun service tier n'a été détecté"
+  },
+  "thirdParty_purposes_advertising": { "message": "Publicité" },
+  "thirdParty_purposes_social_interaction": { "message": "Social" },
+  "thirdParty_purposes_analytics": { "message": "Analyse" },
+  "thirdParty_purposes_personalization": { "message": "Personnalisation" },
+  "thirdParty_purposes_other": { "message": "Autres" },
+  "thirdParty_purposes_all": { "message": "Tout" },
+
+  "summary_thirdParty_blocked": { "message": "$1 bloqué" },
+  "summary_thirdParty_blocked_plural": { "message": "$1 bloqués" },
+
+  "summary_thirdParty_detected": { "message": "$1 détecté" },
+  "summary_thirdParty_detected_plural": { "message": "$1 détectés" },
+
+  "summary_thirdParty_error_description": { "message": "Une erreur s'est produite lors du lancement du bloqueur en arrière-plan. Je peux essayer de le redémarrer" },
+  "summary_thirdParty_error_button": { "message": "Redémarrer le plugin" },
+
+  "setup_thirdParty_categories_whitelisted": { "message": "Mes services tiers" },
+  "setup_thirdParty_categories_blocked": { "message": "Autres services tiers" },
+
+  "setup_thirdParty_endOfList_mainPurpose": {
+    "message": "La liste des services tiers utilisés par $1 pour la catégorie $2 est terminée"
+  },
+
+  "setup_thirdParty_endOfList": { 
+    "message": "La liste des services tiers utilisés par $1 est terminée"
+  },
+
+  "search": { "message": "Rechercher..." },
+
+  "hour": { "message": "$1 heure" },
+  "hour_plural": { "message": "$1 heures" },
+  "minute": { "message": "$1 minute" },
+  "minute_plural": { "message": "$1 minutes" },
+
+  "pauseDescription": { "message": "Stopper momentanément le bloquage" },
+  "pauseIndeterminate": { "message": "Toujours" },
+  "resumeDescription": { "message": "Blocage stoppé" },
+  "plannedResume": { "message": "Reprise prévue le $1" },
+
+  "refreshWarning_button": { "message": "Actualiser" },
+  "refreshWarning_tooltip": { "message": "Actualiser l'onglet courant" },
+  "refreshWarning_text": { "message": "Les modifications que j'ai effectuées seront effectives pour la suite de ma navigation. Si je veux qu'elles soient prises en compte pour les onglets déjà chargés, je dois les actualiser" },
+  
+  "invalidWebsite_catchphrase": { "message": "Oups" },
+  "invalidWebsite_text": { "message": "L'adresse détectée ne correspond pas à un site internet" }
+}
