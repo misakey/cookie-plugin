@@ -14,9 +14,8 @@ import { getCurrentTab } from 'helpers/tabs';
 import globals from 'background/globals';
 
 import { getBlockingResponse, deserializeEngine } from 'background/engine';
-import { getItem, setItem } from 'background/storage';
+import { getItem } from 'background/storage';
 import {
-  setBadgeBackgroundColor,
   setBadgeTextColor,
   setBadgeText,
   toggleBadgeAndIconOnPaused,
@@ -43,7 +42,9 @@ async function loadAdblocker() {
 }
 
 function handleConfig() {
-  setBadgeBackgroundColor(common.misakey);
+  globals.getPaused().then((pausedBlocking) => {
+    toggleBadgeAndIconOnPaused(pausedBlocking);
+  });
   const { name, version } = globals.BROWSER_INFOS;
   if (name === 'firefox' && version >= 63) {
     setBadgeTextColor(common.white);
@@ -73,9 +74,7 @@ function handleTabs() {
 function handleUpdate() {
   browser.runtime.onInstalled.addListener(({ reason, previousVersion }) => {
     if (reason === 'update' && previousVersion <= '1.6.1') {
-      globals.pausedBlocking = false;
-      setItem('pausedBlocking', false);
-      openInNewTab('https://blog.misakey.com');
+      openInNewTab('https://docs.misakey.com/release/?id=mise-à-jour-du-plugin');
     }
   });
 }

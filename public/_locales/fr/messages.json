@@ -55,7 +55,7 @@
 
   "refreshWarning_button": { "message": "Actualiser" },
   "refreshWarning_tooltip": { "message": "Actualiser l'onglet courant" },
-  "refreshWarning_text": { "message": "Les modifications que j'ai effectuées seront effectives pour la suite de ma navigation. Si je veux qu'elles soient prises en compte pour les onglets déjà chargés, je dois les actualiser" },
+  "refreshWarning_text": { "message": "J'actualise ma page pour lui appliquer ma nouvelle configuration" },
   
   "invalidWebsite_catchphrase": { "message": "Oups" },
   "invalidWebsite_text": { "message": "L'adresse détectée ne correspond pas à un site internet" }

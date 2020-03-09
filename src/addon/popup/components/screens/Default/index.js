@@ -30,7 +30,7 @@ const DefaultScreen = () => {
 
   return (
     <Box className={classes.container} display="flex" justifyContent="center" alignItems="center">
-      <Typography className={classes.title}>
+      <Typography variant="h5" className={classes.title}>
         <span className={classes.catchphrase}>{t('invalidWebsite_catchPhrase')}</span>
         {t('invalidWebsite_text')}
       </Typography>
