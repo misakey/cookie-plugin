@@ -74,7 +74,7 @@ function handleTabs() {
 function handleUpdate() {
   browser.runtime.onInstalled.addListener(({ reason, previousVersion }) => {
     if (reason === 'update' && previousVersion <= '1.6.1') {
-      openInNewTab('https://docs.misakey.com/release/?id=mise-à-jour-du-plugin');
+      openInNewTab('https://docs.misakey.com/#/release/?id=version-200');
     }
   });
 }
