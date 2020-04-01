@@ -1,9 +1,9 @@
-import React, { useMemo, useCallback, useEffect } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { refreshWarningShow } from 'popup/store/actions/warning';
-import { sendMessage, GET_BLOCKER_STATE, TOGGLE_BLOCKED_STATE } from 'helpers/messages';
+import { showWarning } from 'store/actions/warning';
+import { togglePauseState, setPauseState, setTimeoutFunction } from 'store/actions/pause';
 
 import useTranslation from 'popup/hooks/useTranslation';
 
@@ -40,21 +40,11 @@ const useOptions = (t) => useMemo(() => [
   },
 ], [t]);
 
-const useAssignCallback = (
-  setPaused,
-  setPausedTime,
-) => useCallback((response) => {
-  setPaused(response.paused);
-  setPausedTime(response.pausedTime);
-}, [setPaused, setPausedTime]);
-
-const usePause = (assignCallback, dispatchShowWarning) => useCallback((time = null) => {
+const usePause = (dispatchOnPauseBlocking, dispatchShowWarning) => useCallback((time = null) => {
   const deadline = time ? Date.now() + (time * 60 * 1000) : null;
-  return sendMessage(TOGGLE_BLOCKED_STATE, { time: deadline }).then((response) => {
-    assignCallback(response);
-    dispatchShowWarning();
-  });
-}, [assignCallback, dispatchShowWarning]);
+  dispatchOnPauseBlocking(deadline);
+  dispatchShowWarning();
+}, [dispatchOnPauseBlocking, dispatchShowWarning]);
 
 const useHandleChoice = (onPause, setAnchorEl) => useCallback((value) => {
   onPause(value);
@@ -67,33 +57,25 @@ const getPlannedDate = (pausedTime) => {
   return `${date.toLocaleDateString()} - ${date.toLocaleTimeString()}`;
 };
 
-function PauseButton({ dispatchShowWarning }) {
+function PauseButton({ dispatchShowWarning, dispatchOnPauseBlocking, pause, time }) {
   const classes = useStyles();
   const t = useTranslation();
 
   const options = useOptions(t);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [paused, setPaused] = React.useState(null);
-  const [pausedTime, setPausedTime] = React.useState(null);
 
-  const assignCallback = useAssignCallback(setPaused, setPausedTime);
-  const onPause = usePause(assignCallback, dispatchShowWarning);
+  const onPause = usePause(dispatchOnPauseBlocking, dispatchShowWarning);
 
   const handleChoice = useHandleChoice(onPause, setAnchorEl);
   const onClose = useCallback(() => { setAnchorEl(null); }, []);
   const onClick = useCallback(
-    (event) => (paused ? onPause() : setAnchorEl(event.currentTarget)), [onPause, paused],
-  );
-
-  useEffect(
-    () => { sendMessage(GET_BLOCKER_STATE).then(assignCallback); },
-    [assignCallback],
+    (event) => (pause ? onPause() : setAnchorEl(event.currentTarget)), [onPause, pause],
   );
 
   return (
     <React.Fragment>
-      <Tooltip title={paused
-        ? `${pausedTime ? t('plannedResume', getPlannedDate(pausedTime)) : t('resumeDescription')}`
+      <Tooltip title={pause
+        ? `${time ? t('plannedResume', getPlannedDate(time)) : t('resumeDescription')}`
         : t('pauseDescription')}
       >
         <Button
@@ -105,7 +87,7 @@ function PauseButton({ dispatchShowWarning }) {
           aria-haspopup="true"
           onClick={onClick}
         >
-          {paused ? <PlayArrow /> : <Pause />}
+          {pause ? <PlayArrow /> : <Pause />}
         </Button>
       </Tooltip>
 
@@ -137,11 +119,35 @@ function PauseButton({ dispatchShowWarning }) {
 
 PauseButton.propTypes = {
   dispatchShowWarning: PropTypes.func.isRequired,
+  dispatchOnPauseBlocking: PropTypes.func.isRequired,
+  pause: PropTypes.bool,
+  time: PropTypes.string,
+};
+
+PauseButton.defaultProps = {
+  pause: false,
+  time: null,
 };
 
 // CONNECT
-const mapDispatchToProps = (dispatch) => ({
-  dispatchShowWarning: () => dispatch(refreshWarningShow()),
+
+const mapStateToProps = (state) => ({
+  pause: state.pause.pause,
+  time: state.pause.time,
 });
 
-export default connect(null, mapDispatchToProps)(PauseButton);
+const mapDispatchToProps = (dispatch) => ({
+  dispatchOnPauseBlocking: (time = null) => {
+    dispatch(togglePauseState(time));
+
+    if (time) {
+      const timeoutFunction = setTimeout(() => {
+        dispatch(setPauseState(false, null));
+      }, time - Date.now());
+      dispatch(setTimeoutFunction(timeoutFunction));
+    }
+  },
+  dispatchShowWarning: () => dispatch(showWarning('refresh')),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(PauseButton);

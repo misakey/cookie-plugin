@@ -22,10 +22,12 @@
     "react-router-dom": "^5.0.1",
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",
+    "redux-logger": "^3.0.6",
     "tldts": "^5.3.2",
     "typeface-roboto": "^0.0.54",
     "ua-parser-js": "^0.7.21",
-    "web-ext-types": "^3.2.1"
+    "web-ext-types": "^3.2.1",
+    "webext-redux": "^2.1.6"
   },
   "scripts": {
     "generate-manifest": "node manifest/generate.js",
@@ -35,8 +37,6 @@
     "lint:ci": "eslint ./src/ --report-unused-disable-directives --ext .js,.md",
     "lint:fix": "eslint ./src/ --cache --fix --ext .js,.md",
     "eject": "react-scripts-web-ext eject",
-    "generate-engine": "node engine/generation/createEngine.js",
-    "generate-rules-mapping": "node engine/generation/createDatabaseJSON.js",
     "start-server-mockup": "node engine/serverMockup.js"
   },
   "devDependencies": {

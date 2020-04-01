@@ -27,9 +27,6 @@
   "summary_thirdParty_detected": { "message": "$1 détecté" },
   "summary_thirdParty_detected_plural": { "message": "$1 détectés" },
 
-  "summary_thirdParty_error_description": { "message": "Une erreur s'est produite lors du lancement du bloqueur en arrière-plan. Je peux essayer de le redémarrer" },
-  "summary_thirdParty_error_button": { "message": "Redémarrer le plugin" },
-
   "setup_thirdParty_categories_whitelisted": { "message": "Mes services tiers" },
   "setup_thirdParty_categories_blocked": { "message": "Autres services tiers" },
 
@@ -53,10 +50,14 @@
   "resumeDescription": { "message": "Blocage stoppé" },
   "plannedResume": { "message": "Reprise prévue le $1" },
 
-  "refreshWarning_button": { "message": "Actualiser" },
-  "refreshWarning_tooltip": { "message": "Actualiser l'onglet courant" },
-  "refreshWarning_text": { "message": "J'actualise ma page pour lui appliquer ma nouvelle configuration" },
+  "warning_refresh_button": { "message": "Actualiser" },
+  "warning_refresh_tooltip": { "message": "Actualiser l'onglet courant" },
+  "warning_refresh_text": { "message": "J'actualise ma page pour lui appliquer ma nouvelle configuration" },
   
+  "warning_error_text": { "message": "Une erreur s'est produite lors du lancement du bloqueur en arrière-plan. Je peux essayer de le redémarrer" },
+  "warning_error_tooltip": { "message": "Redémarrer le plugin" },
+  "warning_error_button": { "message": "Redémarrer" },
+
   "invalidWebsite_catchphrase": { "message": "Oups" },
   "invalidWebsite_text": { "message": "L'adresse détectée ne correspond pas à un site internet" }
 }

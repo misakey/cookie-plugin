@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
@@ -10,18 +10,20 @@ import Typography from '@material-ui/core/Typography';
 
 import isEmpty from 'lodash/isEmpty';
 import isNil from 'lodash/isNil';
+import get from 'lodash/get';
+import groupBy from 'lodash/groupBy';
+import isString from 'lodash/isString';
 
-import { setWhitelist, setApps } from 'popup/store/actions/thirdparty';
-import { refreshWarningShow } from 'popup/store/actions/warning';
-import ThirdPartySchema from 'popup/store/schemas/Trackers';
+import { setWhitelist } from 'store/actions/thirdparty';
+import { showWarning } from 'store/actions/warning';
+import RequestsSchema from 'store/schemas/Requests';
 
 import ElevationScroll from 'popup/components/dumb/ElevationScroll';
 import ThirdPartySearchBar from 'popup/components/smart/SearchBar';
-import TrackerList from 'popup/components/screens/Setup/List';
+import RequestList from 'popup/components/screens/Setup/List';
 import Switch from 'popup/components/dumb/Switch';
 import Screen from 'popup/components/dumb/Screen';
 
-import { sendMessage, UPDATE_WHITELIST, GET_APPS, GET_WHITELIST } from 'helpers/messages';
 import useTranslation from 'popup/hooks/useTranslation';
 
 const PURPOSES_FILTER_HEIGHT = 38;
@@ -33,7 +35,7 @@ const useStyles = makeStyles(() => ({
     padding: '5px',
   },
   chip: { margin: '7px 4px' },
-  trackerList: {
+  requestList: {
     height: `calc(100vh - ${APP_BAR_HEIGHT}px - ${PURPOSES_FILTER_HEIGHT}px)`,
     overflow: 'auto',
   },
@@ -41,10 +43,7 @@ const useStyles = makeStyles(() => ({
 
 const getSearchParams = (search) => {
   const params = new URLSearchParams(search);
-  return {
-    mainPurpose: params.get('mainPurpose'),
-    search: params.get('search'),
-  };
+  return { mainPurpose: params.get('mainPurpose') };
 };
 
 const useUpdateWhitelist = (
@@ -53,18 +52,12 @@ const useUpdateWhitelist = (
   whitelistedDomains,
 ) => useCallback((action, domain) => {
   const newWhitelist = action === 'add' ? [...whitelistedDomains, domain] : whitelistedDomains.filter((val) => val !== domain);
-  sendMessage(UPDATE_WHITELIST, { whitelistedDomains: newWhitelist }).then((response) => {
-    dispatchWhitelist(response);
-    dispatchShowWarning();
-  });
+  dispatchWhitelist(newWhitelist);
+  dispatchShowWarning();
 }, [whitelistedDomains, dispatchWhitelist, dispatchShowWarning]);
 
-const useSetParams = (location, history) => useCallback((search, mainPurpose) => {
+const useSetParams = (location, history) => useCallback((mainPurpose) => {
   const nextSearch = new URLSearchParams('');
-  if (!isEmpty(search)) {
-    nextSearch.set('search', search);
-  }
-
   if (!isEmpty(mainPurpose)) {
     nextSearch.set('mainPurpose', mainPurpose);
   }
@@ -75,11 +68,10 @@ const useSetParams = (location, history) => useCallback((search, mainPurpose) =>
 }, [location, history]);
 
 function ThirdPartySetup({
-  dispatchApps,
   dispatchWhitelist,
   dispatchShowWarning,
   websiteName,
-  apps: { whitelisted, blocked },
+  detectedRequests,
   location,
   history,
   whitelistedDomains,
@@ -87,11 +79,32 @@ function ThirdPartySetup({
   const classes = useStyles();
   const t = useTranslation();
 
-  const [isFetching, setIsFetching] = React.useState(false);
-  const [trackerListRef, setTrackerListRef] = React.useState(undefined);
+  const [requestListRef, setRequestListRef] = React.useState(undefined);
+  const [search, setSearch] = React.useState('');
 
-  const { search, mainPurpose } = getSearchParams(location.search);
+  const { mainPurpose } = getSearchParams(location.search);
   const setParams = useSetParams(location, history);
+
+  const filteredRequests = useMemo(() => {
+    let result = [...detectedRequests];
+
+    if (mainPurpose) {
+      result = result.filter((app) => (app.mainPurpose === mainPurpose));
+    }
+
+    if (isString(search) && !isEmpty(search)) {
+      result = result.filter(
+        (app) => (app.mainDomain.toLowerCase().includes(search.toLowerCase())),
+      );
+    }
+
+    return result;
+  }, [detectedRequests, mainPurpose, search]);
+
+  const { whitelisted = [], blocked = [] } = useMemo(
+    () => groupBy(filteredRequests, (app) => (app.blocked ? 'blocked' : 'whitelisted')),
+    [filteredRequests],
+  );
 
   const updateWhitelist = useUpdateWhitelist(
     dispatchWhitelist,
@@ -105,7 +118,6 @@ function ThirdPartySetup({
     return <Switch checked={isWhitelisted} onChange={onChange} value={application.id} />;
   }, [updateWhitelist, whitelistedDomains]);
 
-  const searchParams = useMemo(() => ({ search, mainPurpose }), [search, mainPurpose]);
   const endOfListText = useMemo(
     () => (mainPurpose
       ? t('setup_thirdParty_endOfList_mainPurpose', [websiteName, t(`thirdParty_purposes_${mainPurpose}`)])
@@ -113,42 +125,29 @@ function ThirdPartySetup({
     [mainPurpose, t, websiteName],
   );
 
-  const getWhitelist = useCallback(() => {
-    sendMessage(GET_WHITELIST).then((response) => { dispatchWhitelist(response); });
-  }, [dispatchWhitelist]);
-
-  const getApps = useCallback(() => {
-    sendMessage(GET_APPS, searchParams).then((response) => { dispatchApps(response); });
-  }, [dispatchApps, searchParams]);
-
   const togglePurpose = useCallback((purpose) => {
     if (purpose === 'all' || mainPurpose === purpose) {
-      return setParams(search, null);
+      return setParams(null);
     }
-    return setParams(search, purpose);
-  }, [mainPurpose, search, setParams]);
+    return setParams(purpose);
+  }, [mainPurpose, setParams]);
 
   const isChipActive = useCallback(
     (purpose) => ((mainPurpose === purpose) || (isNil(mainPurpose) && purpose === 'all')),
     [mainPurpose],
   );
 
-  useEffect(getWhitelist, []);
-  useEffect(getApps, [getApps]);
-
   return (
     <Screen appBarContent={(
       <ThirdPartySearchBar
         onIconClick={history.goBack}
-        location={location}
-        onSearch={(s) => { setParams(s, mainPurpose); }}
-        onFiltersChange={(purpose) => { setParams(search, purpose); }}
-        onFetching={(value) => setIsFetching(value)}
+        onSearch={setSearch}
+        value={search}
         key="thirdPartySearchBar"
       />
     )}
     >
-      <ElevationScroll target={trackerListRef}>
+      <ElevationScroll target={requestListRef}>
         <Paper>
           <Box display="flex" justifyContent="center" flexWrap="wrap">
             {['all', 'advertising', 'analytics', 'social_interaction', 'personalization', 'other'].map((purpose) => (
@@ -166,53 +165,46 @@ function ThirdPartySetup({
         </Paper>
       </ElevationScroll>
 
-      <Box className={classes.trackerList} ref={(ref) => setTrackerListRef(ref)}>
-        {!isFetching && (
-          <React.Fragment>
-            {whitelisted.length > 0 && (
-              <TrackerList
-                title={t('setup_thirdParty_categories_whitelisted')}
-                entities={whitelisted}
-                secondaryAction={listSecondaryAction}
-              />
-            )}
+      <Box className={classes.requestList} ref={(ref) => setRequestListRef(ref)}>
+        <React.Fragment>
+          {whitelisted.length > 0 && (
+            <RequestList
+              title={t('setup_thirdParty_categories_whitelisted')}
+              entities={whitelisted}
+              secondaryAction={listSecondaryAction}
+            />
+          )}
 
-            {blocked.length > 0 && (
-              <TrackerList
-                title={t('setup_thirdParty_categories_blocked')}
-                entities={blocked}
-                secondaryAction={listSecondaryAction}
-              />
-            )}
+          {blocked.length > 0 && (
+            <RequestList
+              title={t('setup_thirdParty_categories_blocked')}
+              entities={blocked}
+              secondaryAction={listSecondaryAction}
+            />
+          )}
 
-            <Box
-              p={1}
-              display="flex"
-              flexDirection="column"
-              justifyContent="center"
-              textAlign="center"
-              alignItems="center"
-            >
-              <Typography variant="body2" color="textSecondary">
-                {endOfListText}
-              </Typography>
-            </Box>
-          </React.Fragment>
-        )}
-
+          <Box
+            p={1}
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            textAlign="center"
+            alignItems="center"
+          >
+            <Typography variant="body2" color="textSecondary">
+              {endOfListText}
+            </Typography>
+          </Box>
+        </React.Fragment>
       </Box>
     </Screen>
   );
 }
 
 ThirdPartySetup.propTypes = {
-  dispatchApps: PropTypes.func.isRequired,
   dispatchWhitelist: PropTypes.func.isRequired,
   dispatchShowWarning: PropTypes.func.isRequired,
-  apps: PropTypes.shape({
-    blocked: PropTypes.arrayOf(PropTypes.shape(ThirdPartySchema.propTypes)),
-    whitelisted: PropTypes.arrayOf(PropTypes.shape(ThirdPartySchema.propTypes)),
-  }),
+  detectedRequests: PropTypes.arrayOf(PropTypes.shape(RequestsSchema.propTypes)),
   history: PropTypes.object.isRequired,
   location: PropTypes.shape({ search: PropTypes.string, pathname: PropTypes.string }).isRequired,
   whitelistedDomains: PropTypes.arrayOf(PropTypes.string),
@@ -220,21 +212,20 @@ ThirdPartySetup.propTypes = {
 };
 
 ThirdPartySetup.defaultProps = {
-  apps: [],
+  detectedRequests: [],
   whitelistedDomains: [],
 };
 
 // CONNECT
 const mapStateToProps = (state) => ({
-  apps: state.thirdparty.apps,
+  websiteName: get(state.websites.infos, state.websites.currentTabId, { name: '' }).name,
+  detectedRequests: get(state.thirdparty.detectedRequests, state.websites.currentTabId, []),
   whitelistedDomains: state.thirdparty.whitelistedDomains,
-  websiteName: state.currentWebsite.name,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  dispatchApps: (data) => dispatch(setApps(data)),
   dispatchWhitelist: (data) => dispatch(setWhitelist(data)),
-  dispatchShowWarning: () => dispatch(refreshWarningShow()),
+  dispatchShowWarning: () => dispatch(showWarning('refresh')),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ThirdPartySetup);

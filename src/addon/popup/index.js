@@ -2,9 +2,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 // store
-import { createStore } from 'redux';
+import { Store } from 'webext-redux';
 import { Provider as StoreProvider } from 'react-redux';
-import reducers from 'popup/store/reducers';
 // routing
 import { BrowserRouter as Router } from 'react-router-dom';
 // ui
@@ -28,16 +27,19 @@ if (isDesktopDevice()) {
 }
 
 // STORE
-const store = createStore(reducers);
+const store = new Store();
 
-ReactDOM.render((
-  <React.Suspense fallback={null}>
-    <StoreProvider store={store}>
-      <MuiThemeProvider theme={theme}>
-        <Router>
-          <App />
-        </Router>
-      </MuiThemeProvider>
-    </StoreProvider>
-  </React.Suspense>
-), rootNode);
+// wait for the store to connect to the background page
+store.ready().then(() => {
+  ReactDOM.render((
+    <React.Suspense fallback={null}>
+      <StoreProvider store={store}>
+        <MuiThemeProvider theme={theme}>
+          <Router>
+            <App />
+          </Router>
+        </MuiThemeProvider>
+      </StoreProvider>
+    </React.Suspense>
+  ), rootNode);
+});

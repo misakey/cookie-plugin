@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "popup": ["src/addon/popup"],
+      "store": ["src/addon/store"],
       "helpers": ["src/addon/helpers"],
       "background": ["src/addon/background"],
       "content": ["src/addon/content"],

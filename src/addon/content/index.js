@@ -17,6 +17,6 @@ import { sendMessage, GET_BLOCKER_STATE } from 'helpers/messages';
  * 'beforescriptexecute' event is available, currently only on Firefox).
  */
 
-sendMessage(GET_BLOCKER_STATE).then(({ paused }) => {
-  if (!paused) { injectCosmetics(window, true /* MutationObserver */); }
+sendMessage(GET_BLOCKER_STATE).then((pause) => {
+  if (!pause) { injectCosmetics(window, true /* MutationObserver */); }
 });

@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function TrackerList({ entities, secondaryAction, title }) {
+function RequestList({ entities, secondaryAction, title }) {
   const classes = useStyles();
 
   return (
@@ -60,7 +60,7 @@ function TrackerList({ entities, secondaryAction, title }) {
   );
 }
 
-TrackerList.propTypes = {
+RequestList.propTypes = {
   entities: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string,
     name: PropTypes.string,
@@ -71,10 +71,10 @@ TrackerList.propTypes = {
   title: PropTypes.string,
 };
 
-TrackerList.defaultProps = {
+RequestList.defaultProps = {
   entities: [],
   secondaryAction: null,
   title: null,
 };
 
-export default TrackerList;
+export default RequestList;

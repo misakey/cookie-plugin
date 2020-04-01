@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 
-const TrackersSchema = {
+const RequestsSchema = {
   name: PropTypes.string,
   mainDomain: PropTypes.string,
   blocked: PropTypes.bool,
 };
 
-export default TrackersSchema;
+export default RequestsSchema;

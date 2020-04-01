@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import get from 'lodash/get';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -40,7 +41,10 @@ DefaultAppBar.propTypes = {
 
 // CONNECT
 const mapStateToProps = (state) => ({
-  currentWebsite: state.currentWebsite,
+  currentWebsite: get(state.websites.infos, state.websites.currentTabId, {
+    faviconUrl: null,
+    name: '',
+  }),
 });
 
 export default connect(mapStateToProps)(DefaultAppBar);

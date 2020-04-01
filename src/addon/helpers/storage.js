@@ -1,4 +1,4 @@
-import { log } from 'background/utils';
+import { log } from 'helpers/browserActions';
 
 export async function setItem(key, value) {
   try {

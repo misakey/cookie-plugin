@@ -21,6 +21,7 @@ linkedin.com##div[data-id=cookie-policy]
 ###js-banner-cookies
 lafourchette.com###cboxOverlay
 lafourchette.com###colorbox
+lafourchette.com##.css-kqelwe e19krov40
 ###cookies:not(html)
 ##.cookies:not(html)
 vim.fandom.com##div[data-tracking-opt-in-overlay="true"]
@@ -43,3 +44,4 @@ hellobank.fr##.popin-cache
 afcdp.net##body.cooky-needs-consent:style(overflow: auto !important;)
 #@#.social-link
 #@#.social-link-rss
+###gdpr_popin

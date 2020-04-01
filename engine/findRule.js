@@ -1,24 +1,30 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
 const fetch = require('isomorphic-fetch');
-const { fetchLists } = require('@cliqz/adblocker-webextension');
+const path = require('path');
+const { readFileSync } = require('fs');
+
+const { fetchLists, fullLists } = require('@cliqz/adblocker-webextension');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const prompt = require('prompt');
-const remoteLists = require('./lists/remote');
-const { rules, whitelist } = require('./lists/custom');
+
+const listDir = path.resolve(__dirname, './lists');
+
+const analytics = readFileSync(`${listDir}/networkAnalytics.txt`, 'utf8');
+const advertising = readFileSync(`${listDir}/networkAdvertising.txt`, 'utf8');
+const cosmetic = readFileSync(`${listDir}/cosmetic.txt`, 'utf8');
+const whitelist = readFileSync(`${listDir}/whitelist.txt`, 'utf8');
 
 function onErr(err) {
   console.log(err);
   return 1;
 }
 
-const customRules = Object.values(rules);
+const customRules = [analytics, advertising, cosmetic];
 const whitelistedRules = whitelist.split(/\n/g);
 
 const getAllrules = async () => {
-  const remoteRules = await Promise.all(
-    Object.values(remoteLists).map(async (urls) => fetchLists(fetch, urls)),
-  );
+  const remoteRules = await fetchLists(fetch, fullLists);
   const allRules = remoteRules.concat(customRules);
   const rulesAsText = allRules.join('\n');
   return rulesAsText.split(/\n/g);
@@ -40,7 +46,7 @@ const findPattern = async (err, result) => {
     const whitelisted = whitelistedRules.filter((element) => element.match(new RegExp(`${result.pattern}`)));
     console.log(`Found rules: \n ${found.join('\n')}`);
     if (whitelisted.length > 0) {
-      console.log(`Found in whitelist: \n ${whitelisted.join('\n')}`);
+      console.log(`Found in whitelist: \n${whitelisted.join('\n')}`);
     }
   } else {
     console.log(`No rules found for pattern: ${result.pattern}`);

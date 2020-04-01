@@ -55,7 +55,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// @FIXME add to @misakey/ui
 function Switch({ checked, value, label, onChange, ...rest }) {
   const classes = useStyles();
 

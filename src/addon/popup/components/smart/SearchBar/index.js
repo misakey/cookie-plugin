@@ -7,12 +7,9 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import IconButton from '@material-ui/core/IconButton';
 
-import {
-  setApps,
-} from 'popup/store/actions/thirdparty';
-
 import isNil from 'lodash/isNil';
 import isString from 'lodash/isString';
+import get from 'lodash/get';
 
 import InputSearch from 'popup/components/dumb/Input/Search';
 import WebsiteAvatar from 'popup/components/dumb/Avatar/Website';
@@ -28,11 +25,6 @@ const getOnReset = (onSearch, inputRef) => ({ noFocus }) => {
   if (!isNil(inputRef.current) && noFocus !== true) {
     inputRef.current.focus();
   }
-};
-
-const getSearchParams = (search) => {
-  const params = new URLSearchParams(search);
-  return { search: params.get('search') };
 };
 
 const getIsSearchActive = (search) => !isNil(search);
@@ -63,23 +55,17 @@ const useHasSearch = (search) => useMemo(() => getHasSearch(search), [search]);
 
 // COMPONENTS
 function ThirdPartySearchBar({
-  dispatchApps,
-  location,
   currentWebsite,
   onIconClick,
-  onFetching,
   onSearch,
-  ...rest
+  value,
 }) {
   const inputRef = useRef();
 
   const classes = useStyles();
-  const queryParams = getSearchParams(location.search);
 
-  const search = queryParams.search || '';
-
-  const isSearchActive = useIsSearchActive(search);
-  const hasSearch = useHasSearch(search);
+  const isSearchActive = useIsSearchActive(value);
+  const hasSearch = useHasSearch(value);
 
   const onSearchChange = useOnSearchChange(onSearch);
   const onReset = useOnReset(onSearch, inputRef);
@@ -88,9 +74,8 @@ function ThirdPartySearchBar({
   return (
     <InputSearch
       ref={inputRef}
-      {...rest}
       autoFocus={isSearchActive}
-      value={search}
+      value={value}
       onChange={onSearchChange}
       onFocus={onActive}
       Icon={ArrowBackIcon}
@@ -117,14 +102,12 @@ function ThirdPartySearchBar({
 }
 
 ThirdPartySearchBar.propTypes = {
-  dispatchApps: PropTypes.func.isRequired,
   currentWebsite: PropTypes.shape({
     name: PropTypes.string,
     faviconUrl: PropTypes.string,
   }),
-  location: PropTypes.shape({ pathname: PropTypes.string, search: PropTypes.string }).isRequired,
+  value: PropTypes.string,
   onIconClick: PropTypes.func.isRequired,
-  onFetching: PropTypes.func.isRequired,
   onSearch: PropTypes.func.isRequired,
 };
 
@@ -133,16 +116,15 @@ ThirdPartySearchBar.defaultProps = {
     name: '',
     faviconUrl: null,
   },
+  value: '',
 };
 
 const mapStateToProps = (state) => ({
-  currentWebsite: state.currentWebsite,
+  currentWebsite: get(state.websites.infos, state.websites.currentTabId, {
+    faviconUrl: null,
+    name: '',
+  }),
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  dispatchApps: (data) => {
-    dispatch(setApps(data));
-  },
-});
 
-export default connect(mapStateToProps, mapDispatchToProps)(ThirdPartySearchBar);
+export default connect(mapStateToProps)(ThirdPartySearchBar);

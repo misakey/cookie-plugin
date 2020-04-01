@@ -1,0 +1,7 @@
+##div[class^="MuiSnackbar-"]
+###cookies
+##.cookies
+##.cookiebanner
+##.cookie-notice
+##.scrollup
+##.trackingCookiesDisclaimer

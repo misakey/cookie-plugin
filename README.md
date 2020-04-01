@@ -3,10 +3,10 @@ This is the code source for Misakey Cookie Webextension.
 
 #### Launch
 
-This project use [react-scripts-webextension](https://github.com/constfun/create-react-WebExtension)
+This project uses [react-scripts-webextension](https://github.com/constfun/create-react-WebExtension)
 
 ##### Dev mode: 
-* `TARGET_BROWSER=firefox make start`.
+* `TARGET_BROWSER=firefox yarn start`.
 * Available value for `TARGET_BROWSER`: `['chrome', 'firefox']`
 * Default value: `'firefox'`
 * output folder in `build/dev`
@@ -18,10 +18,16 @@ This project use [react-scripts-webextension](https://github.com/constfun/create
 * output folder in `build/prod`
 
 ##### Production zips:
-* `make build-zip` --> directly generate the zips in `build`
-* use `VERSION=<myversion> make build-zip` to get zip output with version in the name
-* `make zip-plugin-source-code` --> generate a zip of the source_code for reviewers in `build/source_code.zip`
 
+###### Build zips
+* `make build-zip`
+* use `VERSION=<myversion> make build-zip` to get zip output with version in the name
+* output directly in `build`
+
+
+###### Source code zip
+* `make zip-plugin-source-code` --> generate a zip of the source_code for reviewers 
+* output folder in `build/source_code.zip`
 
 #### Tests on browser
 
@@ -47,21 +53,16 @@ This project use [react-scripts-webextension](https://github.com/constfun/create
 The main purpose of this script is to block unwanted requests before they are launched in the client browser. 
 It is based on the `@cliqz/adblocker` library.
 
-The background script use a prebuilt `engine.bytes` file generated with `adblocker` lib which contains the blocking rules (Cf. https://www.npmjs.com/package/@cliqz/adblocker) and a JSON file containing the mapping ruleId - mainPurpose of the tracker.
 
-These files are stored on a misakey AWS link.
+###### Add new blocking rules
+See [engine README.md](engine/README.md) in `./engine`
 
-###### Generate resource files 
-To generate news `engine.bytes` and `mainPurpose.json`, use:
-* `yarn generate-engine`
-* `yarn generate-rules-mapping`
-
-###### Test generated files 
-To test the new files inside plugin: 
+###### Test new rules 
+To test the new rules inside the plugin before pushing on the repo: 
 * Serve the files with `serverMockup.js`:
-* `yarn start-server-mockup`
+  * `yarn start-server-mockup`
 * Replace RESOURCE_URL in `src/addon/background/config.js` by `'http://localhost:3005'`
-* Test the plugin on your browser 
+* Test the plugin on your browser as explained in [Test on browser](#tests-on-browser)
 
 To see how to add or remove rules in `engine.bytes` and `mainPurpose.json` file, see README.md in folder `engine`.
 

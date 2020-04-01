@@ -1,36 +1,39 @@
+/* eslint-disable import/no-dynamic-require */
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
 const express = require('express');
 const path = require('path');
+const { readFileSync } = require('fs');
 
 const app = express();
-const { ENGINE_VERSION } = require('@cliqz/adblocker-webextension');
 
-const databaseDir = path.resolve(__dirname, './database');
+const resourceDir = path.resolve(__dirname, './lists');
 
-// eslint-disable-next-line import/no-dynamic-require
-const rulesPurposes = require(`${databaseDir}/rulesPurposes_v${ENGINE_VERSION}.json`);
-const fs = require('fs');
+const analytics = readFileSync(`${resourceDir}/networkAnalytics.txt`, 'utf8');
+const advertising = readFileSync(`${resourceDir}/networkAdvertising.txt`, 'utf8');
+const cosmetic = readFileSync(`${resourceDir}/cosmetic.txt`, 'utf8');
+const whitelist = readFileSync(`${resourceDir}/whitelist.txt`, 'utf8');
 
 const PORT = 3005;
 
-app.get(`/engine_v${ENGINE_VERSION}.bytes`, (req, res) => {
-  // read file from file system
-  fs.readFile(`${databaseDir}/engine_v${ENGINE_VERSION}.bytes`, (err, data) => {
-    if (err) {
-      res.statusCode = 500;
-      res.end(`Error getting the file: ${err}.`);
-    } else {
-      // if the file is found, set Content-type and send data
-      res.setHeader('Content-type', 'application/octet-stream');
-      res.end(data);
-    }
-  });
+app.get('/networkAdvertising.txt', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.end(advertising);
 });
 
-app.get(`/rulesPurposes_v${ENGINE_VERSION}.json`, (req, res) => {
+app.get('/networkAnalytics.txt', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
-  res.end(JSON.stringify(rulesPurposes));
+  res.end(analytics);
+});
+
+app.get('/cosmetic.txt', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.end(cosmetic);
+});
+
+app.get('/whitelist.txt', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.end(whitelist);
 });
 
 app.listen(PORT, () => {
